@@ -7,16 +7,17 @@ import {
   requestAccess,
   signTransaction,
 } from "@stellar/freighter-api";
-import { Networks } from "@stellar/stellar-sdk";
+import { AccountRequiresMemoError, Networks } from "@stellar/stellar-sdk";
 import { useCallback, useEffect, useState } from "react";
 import {
+  buildPaymentXdr,
   fetchNativeXlmBalance,
+  formatHorizonError,
   getHorizonServer,
   isValidPublicKey,
   parseSignedTransaction,
   testnetTxExplorerUrl,
   TESTNET_PASSPHRASE,
-  buildPaymentXdr,
 } from "@/lib/stellar";
 
 type TxFeedback =
@@ -166,7 +167,16 @@ export default function WalletPanel() {
       setTxFeedback({ kind: "success", hash });
       await refreshBalance(publicKey);
     } catch (err) {
-      const message = freighterErrorMessage(err);
+      if (err instanceof AccountRequiresMemoError) {
+        setTxFeedback({
+          kind: "error",
+          message:
+            "This destination requires a memo (SEP-29). Use another testnet account or include the memo the recipient expects.",
+        });
+        return;
+      }
+      const horizonMessage = formatHorizonError(err);
+      const message = horizonMessage ?? freighterErrorMessage(err);
       setTxFeedback({ kind: "error", message });
     }
   };
@@ -293,6 +303,11 @@ export default function WalletPanel() {
                 autoComplete="off"
                 className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 font-mono text-sm text-zinc-900 outline-none ring-zinc-400 focus:ring-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
               />
+              <p className="mt-1 text-xs text-zinc-500">
+                If the account does not exist on testnet yet, we create it and
+                fund it with this amount (must be at least the network minimum,
+                usually 1 XLM).
+              </p>
             </div>
             <div>
               <label
@@ -310,6 +325,10 @@ export default function WalletPanel() {
                 autoComplete="off"
                 className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none ring-zinc-400 focus:ring-2 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
               />
+              <p className="mt-1 text-xs text-zinc-500">
+                Up to 7 decimal places. Leave enough XLM for fees and the account
+                minimum reserve (~1 XLM on unused accounts).
+              </p>
             </div>
             <button
               type="submit"
