@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Stellar Testnet · Freighter",
   description:
-    "Conecte a Freighter, consulte saldo XLM na testnet e envie pagamentos.",
+    "Connect Freighter, check your XLM balance on testnet, and send payments.",
 };
 
 export default function RootLayout({

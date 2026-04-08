@@ -42,7 +42,7 @@ export async function buildPaymentXdr(params: {
 }): Promise<string> {
   const { sourcePublicKey, destination, amount } = params;
   if (!isValidPublicKey(destination)) {
-    throw new Error("Endereço de destino inválido.");
+    throw new Error("Invalid destination address.");
   }
   const server = getHorizonServer();
   const sourceAccount = await server.loadAccount(sourcePublicKey);

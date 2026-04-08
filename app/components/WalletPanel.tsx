@@ -31,7 +31,7 @@ function freighterErrorMessage(err: unknown): string {
     if (typeof m === "string" && m.trim()) return m;
   }
   if (err instanceof Error) return err.message;
-  return "Erro desconhecido.";
+  return "Unknown error.";
 }
 
 export default function WalletPanel() {
@@ -105,7 +105,7 @@ export default function WalletPanel() {
     setExtensionAvailable(true);
     const res = await requestAccess();
     if (res.error) {
-      setBalanceError(res.error.message ?? "Não foi possível conectar.");
+      setBalanceError(res.error.message ?? "Could not connect.");
       return;
     }
     setPublicKey(res.address);
@@ -129,12 +129,15 @@ export default function WalletPanel() {
 
     const dest = destination.trim();
     if (!isValidPublicKey(dest)) {
-      setTxFeedback({ kind: "error", message: "Destino inválido." });
+      setTxFeedback({ kind: "error", message: "Invalid destination." });
       return;
     }
     const amt = amount.trim();
     if (!amt || Number(amt) <= 0) {
-      setTxFeedback({ kind: "error", message: "Informe um valor XLM válido." });
+      setTxFeedback({
+        kind: "error",
+        message: "Enter a valid XLM amount.",
+      });
       return;
     }
 
@@ -152,7 +155,7 @@ export default function WalletPanel() {
       if (signed.error) {
         setTxFeedback({
           kind: "error",
-          message: signed.error.message ?? "Assinatura recusada ou falhou.",
+          message: signed.error.message ?? "Signing was declined or failed.",
         });
         return;
       }
@@ -175,11 +178,11 @@ export default function WalletPanel() {
           Stellar Testnet · Freighter
         </p>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Carteira e XLM
+          Wallet & XLM
         </h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Conecte a Freighter na rede de testes, veja seu saldo e envie XLM.
-          Instale a extensão e selecione Testnet nas configurações da Freighter.
+          Connect Freighter on the test network, view your balance, and send
+          XLM. Install the extension and select Testnet in Freighter settings.
         </p>
       </header>
 
@@ -188,19 +191,19 @@ export default function WalletPanel() {
           role="alert"
           className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100"
         >
-          Freighter não detectada.{" "}
+          Freighter not detected.{" "}
           <a
             href="https://www.freighter.app/"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline underline-offset-2"
           >
-            Instalar Freighter
+            Install Freighter
           </a>
         </div>
       )}
 
-      <section className="space-y-4" aria-label="Conexão da carteira">
+      <section className="space-y-4" aria-label="Wallet connection">
         {!publicKey ? (
           <button
             type="button"
@@ -208,12 +211,12 @@ export default function WalletPanel() {
             disabled={extensionAvailable === false}
             className="w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
           >
-            Conectar carteira
+            Connect wallet
           </button>
         ) : (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-zinc-500">Conta</p>
+              <p className="text-xs font-medium text-zinc-500">Account</p>
               <p className="truncate font-mono text-sm text-zinc-900 dark:text-zinc-100">
                 {publicKey}
               </p>
@@ -223,7 +226,7 @@ export default function WalletPanel() {
               onClick={handleDisconnect}
               className="shrink-0 rounded-xl border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-900 transition hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-100 dark:hover:bg-zinc-900"
             >
-              Desconectar
+              Disconnect
             </button>
           </div>
         )}
@@ -233,8 +236,8 @@ export default function WalletPanel() {
             role="alert"
             className="text-sm font-medium text-amber-700 dark:text-amber-300"
           >
-            A Freighter precisa estar na rede Testnet para este app. Ajuste nas
-            configurações da extensão.
+            Freighter must be on the Testnet network for this app. Change it in
+            the extension settings.
           </p>
         )}
       </section>
@@ -242,13 +245,13 @@ export default function WalletPanel() {
       {publicKey && (
         <section
           className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50/80 p-5 dark:border-zinc-800 dark:bg-zinc-900/40"
-          aria-label="Saldo XLM"
+          aria-label="XLM balance"
         >
           <h2 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Saldo (nativo)
+            Balance (native)
           </h2>
           {balanceLoading ? (
-            <p className="text-sm text-zinc-500">Carregando saldo…</p>
+            <p className="text-sm text-zinc-500">Loading balance…</p>
           ) : balanceError ? (
             <p className="text-sm text-red-600 dark:text-red-400" role="alert">
               {balanceError}
@@ -264,15 +267,15 @@ export default function WalletPanel() {
             disabled={balanceLoading}
             className="text-sm font-medium text-zinc-600 underline-offset-2 hover:underline disabled:opacity-50 dark:text-zinc-400"
           >
-            Atualizar saldo
+            Refresh balance
           </button>
         </section>
       )}
 
       {publicKey && networkOk && (
-        <section aria-label="Enviar XLM">
+        <section aria-label="Send XLM">
           <h2 className="mb-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Enviar XLM (testnet)
+            Send XLM (testnet)
           </h2>
           <form onSubmit={handleSend} className="space-y-4">
             <div>
@@ -280,7 +283,7 @@ export default function WalletPanel() {
                 htmlFor="destination"
                 className="mb-1 block text-xs font-medium text-zinc-500"
               >
-                Conta de destino
+                Destination account
               </label>
               <input
                 id="destination"
@@ -296,7 +299,7 @@ export default function WalletPanel() {
                 htmlFor="amount"
                 className="mb-1 block text-xs font-medium text-zinc-500"
               >
-                Quantidade (XLM)
+                Amount (XLM)
               </label>
               <input
                 id="amount"
@@ -313,7 +316,9 @@ export default function WalletPanel() {
               disabled={txFeedback.kind === "pending"}
               className="w-full rounded-xl bg-emerald-700 px-4 py-3 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-emerald-600 dark:hover:bg-emerald-500"
             >
-              {txFeedback.kind === "pending" ? "Enviando…" : "Enviar transação"}
+              {txFeedback.kind === "pending"
+                ? "Sending…"
+                : "Send transaction"}
             </button>
           </form>
 
@@ -322,7 +327,7 @@ export default function WalletPanel() {
               className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100"
               role="status"
             >
-              <p className="font-medium">Transação enviada com sucesso</p>
+              <p className="font-medium">Transaction submitted successfully</p>
               <p className="mt-1 break-all font-mono text-xs opacity-90">
                 Hash: {txFeedback.hash}
               </p>
@@ -332,7 +337,7 @@ export default function WalletPanel() {
                 rel="noopener noreferrer"
                 className="mt-2 inline-block font-medium underline underline-offset-2"
               >
-                Ver no explorador
+                View in explorer
               </a>
             </div>
           )}
@@ -342,7 +347,7 @@ export default function WalletPanel() {
               className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100"
               role="alert"
             >
-              <p className="font-medium">Falha na transação</p>
+              <p className="font-medium">Transaction failed</p>
               <p className="mt-1">{txFeedback.message}</p>
             </div>
           )}
