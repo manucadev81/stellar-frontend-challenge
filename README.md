@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stellar Frontend Challenge — Freighter & Testnet
 
-## Getting Started
+## Project description
 
-First, run the development server:
+This is a [Next.js](https://nextjs.org/) app that connects to the **[Freighter](https://www.freighter.app/)** browser wallet on the **Stellar Testnet**. You can connect and disconnect your wallet, load and display your **native XLM balance** from Horizon, and **send XLM** (including creating a new unfunded account via `create_account` when the destination does not exist yet). After submission, the UI shows **success or failure**, the **transaction hash**, and a link to the block explorer.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Stack:** Next.js (App Router), React, TypeScript, Tailwind CSS, [`@stellar/freighter-api`](https://www.npmjs.com/package/@stellar/freighter-api), [`@stellar/stellar-sdk`](https://www.npmjs.com/package/@stellar/stellar-sdk).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Prerequisites
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- [pnpm](https://pnpm.io/) (this repo uses a `pnpm-lock.yaml`)
+- [Freighter](https://www.freighter.app/) installed in your browser, with **Testnet** selected in the extension settings
+- Optional: fund your testnet account with the [Stellar Laboratory friendbot](https://laboratory.stellar.org/#account-creator?network=test) or similar if you need XLM
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup — run locally
 
-## Learn More
+1. **Install dependencies**
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   pnpm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Start the development server**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   pnpm dev
+   ```
 
-## Deploy on Vercel
+3. **Open the app** at [http://localhost:3000](http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Click **Connect wallet**, approve Freighter, then use **Refresh balance** and **Send transaction** as needed.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Other scripts**
+
+| Command        | Description              |
+| -------------- | ------------------------ |
+| `pnpm build`   | Production build         |
+| `pnpm start`   | Run production server    |
+| `pnpm lint`    | ESLint                   |
+
+## Screenshots
+
+### Wallet connected state
+
+The public key is shown with a **Disconnect** control once Freighter has authorized the app.
+
+![Wallet connected — account visible with Disconnect](docs/screenshots/wallet-connected-and-balance.png)
+
+### Balance displayed
+
+Native **XLM** balance is loaded from Horizon (testnet) and shown prominently; you can refresh it without sending a transaction.
+
+![Balance displayed — native XLM with Refresh balance](docs/screenshots/wallet-connected-and-balance.png)
+
+### Successful testnet transaction
+
+The same operation can be verified on **StellarExpert** (testnet): successful transaction, ledger, fee, and operation details (e.g. account creation or payment).
+
+![Successful testnet transaction on StellarExpert](docs/screenshots/testnet-transaction-stellar-expert.png)
+
+### Transaction result shown to the user
+
+After Horizon accepts the transaction, the app shows **Transaction submitted successfully**, the **hash**, and **View in explorer** for quick verification.
+
+![In-app transaction result — success, hash, explorer link](docs/screenshots/transaction-result-in-app.png)
